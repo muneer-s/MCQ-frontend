@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@font-face {
+  font-family: 'Oceanwide';
+  src: url('/fonts/Oceanwide-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
