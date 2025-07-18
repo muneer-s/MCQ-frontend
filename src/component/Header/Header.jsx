@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import logo from '../../../public/logo.png';
 import { useNavigate } from 'react-router-dom';
+import dp from '../../../public/dp.png'
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,7 +31,7 @@ const Header = () => {
         >
           <div className="flex items-center space-x-4">
             <img
-              src="../../../public/dp.png"
+              src={dp}
               alt="Profile"
               className="h-20 w-20 rounded-full cursor-pointer"
             />
