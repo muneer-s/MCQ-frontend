@@ -18,10 +18,10 @@ const Home = () => {
 
                 <div className="text-center my-10 mt-0 ">
                     {/* Main Heading */}
-                    <h1 className="text-7xl font-oceanwide font-bold text-gray-800">
+                    <h1 className="text-7xl font-bold text-gray-800">
                         Welcome to{' '}
                         <span className="relative inline-block">
-                            <span className="relative font-oceanwide z-10">TSEEP Mastery Box</span>
+                            <span className="relative  z-10">TSEEP Mastery Box</span>
                             <span className="absolute left-0 bottom-1 w-full h-3 bg-orange-300 z-0"></span>
                         </span>
                     </h1>

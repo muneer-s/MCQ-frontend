@@ -69,7 +69,7 @@ const QuestionPage = () => {
         <>
             <h1 className='text-sky-900 text-center font-bold text-3xl'>Assess your&nbsp;
                 <span className="relative inline-block">
-                    <span className="relative font-oceanwide z-10"> Intelligence</span>
+                    <span className="relative z-10"> Intelligence</span>
                     <span className="absolute left-0 bottom-1 w-full h-2 bg-orange-300 z-0"></span>
                 </span>
             </h1>
