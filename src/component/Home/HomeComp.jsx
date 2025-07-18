@@ -1,4 +1,3 @@
-import React from 'react';
 import Header from '../Header/Header';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,7 +5,7 @@ const HomeComp = () => {
   const navigate = useNavigate();
 
   const handleStart = () => {
-    navigate('/questionsPage'); // Change route as needed
+    navigate('/questionsPage'); 
   };
 
   return (

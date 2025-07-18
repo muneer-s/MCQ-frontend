@@ -19,7 +19,7 @@ const Header = () => {
   };
 
   return (
-    <div className="bg-black w-full h-auto p-4 flex items-center justify-between">
+    <div className="bg-white w-full h-auto p-4 flex items-center justify-between">
       <img src={logo} alt="Logo" className="h-20 w-auto" />
 
       {isLoggedIn && (

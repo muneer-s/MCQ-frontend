@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
+import { submitFeedback } from '../../api/api';
+import Swal from 'sweetalert2';
+
 
 const emojis = [
   { label: "Very Bad", value: 1, emoji: "😠" },
@@ -15,11 +18,33 @@ const ResultPage = ({ score, testId, onSubmitFeedback }) => {
   const [comment, setComment] = useState('');
   const navigate = useNavigate();
 
-  const handleFeedbackSubmit = () => {
-    onSubmitFeedback({
-      emoji: selectedEmoji,
-      comment,
-    });
+  const handleFeedbackSubmit = async () => {
+    if (!selectedEmoji) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'No Emoji Selected',
+        text: 'Please select an emoji for feedback!',
+        confirmButtonColor: '#6366F1'
+      });
+    }
+
+    try {
+      await submitFeedback(testId, selectedEmoji, comment);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Feedback submitted successfully!',
+        text: 'Welcome',
+        confirmButtonColor: '#234B5E',
+      }).then(() => {
+        setSelectedEmoji(null);
+        setComment('');
+        navigate('/startingPage');
+
+      });
+    } catch (error) {
+      alert(error.message || "An error occurred while submitting feedback.");
+    }
   };
 
   return (
@@ -40,14 +65,13 @@ const ResultPage = ({ score, testId, onSubmitFeedback }) => {
         <h3 className="font-semibold text-lg mb-1">Feedback</h3>
         <p className="text-sm mb-4 text-gray-600">Give us a feedback! Your input is important for us. We take customer feedback very seriously.</p>
 
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-start items-center mb-4">
           {emojis.map(({ emoji, value }) => (
             <button
               key={value}
               onClick={() => setSelectedEmoji(value)}
-              className={`text-3xl transition-transform hover:scale-125 ${
-                selectedEmoji === value ? 'scale-125 border-2 border-blue-500 rounded-full p-1' : ''
-              }`}
+              className={`text-3xl transition-transform hover:scale-125 ${selectedEmoji === value ? 'scale-125 border-2 border-blue-500 rounded-full p-1' : ''
+                }`}
             >
               {emoji}
             </button>
@@ -70,7 +94,7 @@ const ResultPage = ({ score, testId, onSubmitFeedback }) => {
         </button>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 flex justify-center items-ceneter mb-10">
         <button
           onClick={() => navigate('/')}
           className="text-sm text-gray-600 hover:underline flex items-center justify-center gap-2"

@@ -1,43 +1,68 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { useNavigate, Link } from 'react-router-dom';
 import { signup } from '../../api/api';
+import { useState } from 'react';
+import Swal from 'sweetalert2';
+
+
 
 const Register = () => {
     const navigate = useNavigate();
-
-    const [formData, setFormData] = useState({
-        fullName: '',
-        email: '',
-        mobile: '',
-        role: '',
-        password: '',
-    });
-
-    const [error, setError] = useState('');
+    const [serverError, setServerError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
+    const validationSchema = Yup.object({
+        fullName: Yup.string()
+            .trim()
+            .required('Full name is required'),
+        email: Yup.string()
+            .email('Invalid email address')
+            .required('Email is required'),
+        mobile: Yup.string()
+            .required('Mobile number is required')
+            .matches(/^\d{10}$/, 'Mobile number must be exactly 10 digits'),
+        role: Yup.string()
+            .required('Please select your current status'),
+        password: Yup.string()
+            .required('Password is required')
+            .matches(
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+                'Password must contain uppercase, lowercase, number and at least 8 characters'
+            ),
+    });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
+    const formik = useFormik({
+        initialValues: {
+            fullName: '',
+            email: '',
+            mobile: '',
+            role: '',
+            password: '',
+        },
+        validationSchema,
+        onSubmit: async (values) => {
+            setServerError('');
+            setLoading(true);
+            try {
+                const data = await signup(values);
 
-        try {
-
-            const data = await signup(formData);
-            alert('Registration successful!');
-            navigate('/login');
-        } catch (err) {
-            setError('Server error. Please try again.');
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registration Successful',
+                    text: 'Welcome !',
+                    confirmButtonColor: '#234B5E',
+                }).then(() => {
+                    navigate('/login');
+                });
+            } catch (err) {
+                setServerError('Server error. Please try again.');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        },
+    });
 
     return (
         <div className="flex items-center justify-center bg-white mb-10">
@@ -47,19 +72,22 @@ const Register = () => {
                     <span className="absolute left-1/2 transform -translate-x-1/2 bottom-0 w-28 h-1 bg-orange-300 z-0"></span>
                 </h2>
 
-                <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+                <form className="mt-8 space-y-5" onSubmit={formik.handleSubmit}>
                     {/* Full Name */}
                     <div>
                         <label className="block text-sm font-bold mb-1">Full Name</label>
                         <input
                             type="text"
                             name="fullName"
-                            value={formData.fullName}
-                            onChange={handleChange}
+                            value={formik.values.fullName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             placeholder="Enter your name"
                             className="w-full border border-gray-300 rounded px-2 py-2 outline-none"
-                            required
                         />
+                        {formik.touched.fullName && formik.errors.fullName && (
+                            <p className="text-red-500 text-sm">{formik.errors.fullName}</p>
+                        )}
                     </div>
 
                     {/* Email */}
@@ -68,18 +96,21 @@ const Register = () => {
                         <input
                             type="email"
                             name="email"
-                            value={formData.email}
-                            onChange={handleChange}
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             placeholder="Enter your email"
                             className="w-full border border-gray-300 rounded px-2 py-2 outline-none"
-                            required
                         />
+                        {formik.touched.email && formik.errors.email && (
+                            <p className="text-red-500 text-sm">{formik.errors.email}</p>
+                        )}
                     </div>
 
                     {/* Mobile */}
                     <div>
                         <label className="block text-sm font-bold mb-1">Mobile Number</label>
-                        <div className="flex mb-6">
+                        <div className="flex mb-1">
                             <div className="flex items-center border border-gray-300 rounded-l p-3">
                                 <img src="https://flagcdn.com/w40/in.png" alt="IN" className="w-5 h-4 mr-2" />
                                 <select className="outline-none bg-transparent text-gray-700 text-sm mr-2" disabled>
@@ -89,13 +120,16 @@ const Register = () => {
                             <input
                                 type="tel"
                                 name="mobile"
-                                value={formData.mobile}
-                                onChange={handleChange}
+                                value={formik.values.mobile}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 placeholder="Enter your phone number"
                                 className="w-full border border-l-0 border-gray-300 rounded-r px-4 py-2 text-center outline-none"
-                                required
                             />
                         </div>
+                        {formik.touched.mobile && formik.errors.mobile && (
+                            <p className="text-red-500 text-sm">{formik.errors.mobile}</p>
+                        )}
                     </div>
 
                     {/* Role */}
@@ -107,24 +141,25 @@ const Register = () => {
                                     type="radio"
                                     name="role"
                                     value="Student"
-                                    checked={formData.role === 'Student'}
-                                    onChange={handleChange}
-                                    className="mr-2"
+                                    checked={formik.values.role === 'Student'}
+                                    onChange={formik.handleChange}
                                 />
-                                Student
+                                <span className="ml-2">Student</span>
                             </label>
                             <label className="inline-flex items-center">
                                 <input
                                     type="radio"
                                     name="role"
                                     value="Employee"
-                                    checked={formData.role === 'Employee'}
-                                    onChange={handleChange}
-                                    className="mr-2"
+                                    checked={formik.values.role === 'Employee'}
+                                    onChange={formik.handleChange}
                                 />
-                                Employee
+                                <span className="ml-2">Employee</span>
                             </label>
                         </div>
+                        {formik.touched.role && formik.errors.role && (
+                            <p className="text-red-500 text-sm">{formik.errors.role}</p>
+                        )}
                     </div>
 
                     {/* Password */}
@@ -133,18 +168,21 @@ const Register = () => {
                         <input
                             type="password"
                             name="password"
-                            value={formData.password}
-                            onChange={handleChange}
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             placeholder="Enter Password"
                             className="w-full border border-gray-300 rounded px-4 py-2 outline-none"
-                            required
                         />
+                        {formik.touched.password && formik.errors.password && (
+                            <p className="text-red-500 text-sm">{formik.errors.password}</p>
+                        )}
                     </div>
 
-                    {/* Error message */}
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                    {/* Server Error */}
+                    {serverError && <p className="text-red-500 text-sm">{serverError}</p>}
 
-                    {/* Save Button */}
+                    {/* Submit Button */}
                     <div>
                         <button
                             type="submit"

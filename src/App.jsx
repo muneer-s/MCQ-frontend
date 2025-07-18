@@ -5,17 +5,28 @@ import LoginPage from './pages/Login/LoginPage';
 import RegisterPage from './pages/Register/RegisterPage';
 import HomeComp from './component/Home/HomeComp';
 import Questions from './pages/Questions/Questions';
+import PublicRoute from './component/PublicRoute/PublicRoute';
+import ProtectedRoute from './component/ProtectedRoute/ProtectedRoute';
+
+
 function App() {
   return (
     <Router>
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<Home />} />
-        <Route path='/pagenotfound' element={<PageNotFound/>} />
-        <Route path='/login' element={<LoginPage/>} />
-        <Route path='/register' element={<RegisterPage/>} />
-        <Route path='/startingPage' element={<HomeComp/>} />
-        <Route path='/questionsPage' element={<Questions/>} />
-        
+
+        <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+        <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+
+        {/* Protected routes */}
+
+        <Route path="/startingPage" element={<ProtectedRoute> <HomeComp /> </ProtectedRoute>} />
+        <Route path="/questionsPage" element={<ProtectedRoute> <Questions /> </ProtectedRoute>} />
+
+        {/* 404 fallback */}
+        <Route path="*" element={<PageNotFound />} />
+
 
       </Routes>
     </Router>

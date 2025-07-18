@@ -3,6 +3,8 @@ import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../api/api'; // Adjust path if needed
 import { useState } from 'react';
+import Swal from 'sweetalert2';
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,18 +28,30 @@ const Login = () => {
       password: '',
     },
     validationSchema,
+
     onSubmit: async (values) => {
       setServerError('');
       try {
         const data = await login(values);
         localStorage.setItem('token', data.token)
-        alert('Login successful!');
-        navigate('/startingPage');
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful',
+          text: 'Welcome back!',
+          confirmButtonColor: '#234B5E',
+        }).then(() => {
+          navigate('/startingPage');
+        });
       } catch (err) {
         setServerError(err.message || 'Login failed');
       }
     },
   });
+
+
+
+
+
 
   return (
     <div className="flex flex-col items-center justify-center bg-white px-4">
